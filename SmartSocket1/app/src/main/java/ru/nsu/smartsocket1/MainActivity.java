@@ -1,7 +1,6 @@
 package ru.nsu.smartsocket1;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
 import com.yandex.mapkit.Animation;
