@@ -1,7 +1,9 @@
 package ru.nsu.smartsocket1;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
@@ -35,27 +37,35 @@ public class MainActivity extends AppCompatActivity {
 
     private final String MAPKIT_API_KEY = "38f7019b-3523-494e-a2dc-088ce94d1298";
     private MapView mapView;
-    private double userLatitude = 0;
-    private double userLongitude = 0;
-    private double ZOOM_INCREMENT = 5.0;
-
+    private double userLatitude = 59.9386;
+    private double userLongitude = 30.3141;
+    private float ZOOM_INCREMENT = 10.0f;
+    private float ZOOM_DEFAULT = 10.05f;
+    private static final int REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION = 112;
+    private static final int REQUEST_CODE_PERMISSION_ACCESS_COARSE_LOCATION = 113;
+    private static final String ACCESS_FINE_LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String ACCESS_COARSE_LOCATION_PERMISSION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private LocationManager manager;
     private LocationListener listener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
             if (location != null) {
                 userLatitude = location.getLatitude();
                 userLongitude = location.getLongitude();
-            }
-            else{
+                moveCameraToUser();
+            } else {
                 System.out.println("Sorry, location unavailable");
             }
         }
+
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
+
         @Override
         public void onProviderEnabled(String provider) {
         }
+
         @Override
         public void onProviderDisabled(String provider) {
         }
@@ -65,31 +75,61 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         MapKitFactory.setApiKey(MAPKIT_API_KEY);
         MapKitFactory.initialize(this);
+        setContentView(R.layout.activity_main);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(ACCESS_FINE_LOCATION_PERMISSION) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(ACCESS_COARSE_LOCATION_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
             // Проверка наличия разрешений
             // Если нет разрешения на использование соответсвующих разркешений выполняем какие-то действия
             System.out.println("have not got permissions");
-            return;
+            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION_PERMISSION}, REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION);
+            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION_PERMISSION}, REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION);
+            //return;
+        } else {
+            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
         }
-        manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,listener);
 
-        // Укажите имя activity вместо map.
-        setContentView(R.layout.activity_main);
-        mapView = (MapView)findViewById(R.id.mapview);
+        mapView = (MapView) findViewById(R.id.mapview);
+
         mapView.getMap().move(
-                new CameraPosition(new Point(userLatitude, userLongitude), 11.0f, 0.0f, 0.0f),
+                new CameraPosition(new Point(userLatitude, userLongitude), ZOOM_DEFAULT, 0.0f, 0.0f),
                 new Animation(Animation.Type.SMOOTH, 0),
                 null);
+
+        System.out.println("in onCreate");
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                System.out.println("got Fine Location");
+                if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                        checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+           }
+       }else
+        if (requestCode == REQUEST_CODE_PERMISSION_ACCESS_COARSE_LOCATION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                System.out.println("got Coarse Location");
+                if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                        checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                    manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+            }
+        }
+        else
+        {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+   }
     protected void moveCameraToUser()
     {
         mapView.getMap().move(
-                new CameraPosition(new Point(userLatitude, userLongitude), 31.0f, 0.0f, 0.0f),
+                new CameraPosition(new Point(userLatitude, userLongitude), ZOOM_DEFAULT, 0.0f, 0.0f),
                 new Animation(Animation.Type.SMOOTH, 0),
                 null);
     }
@@ -102,10 +142,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+
+        System.out.println("in onStart");
         super.onStart();
         mapView.onStart();
         MapKitFactory.getInstance().onStart();
     }
+
     public void onButtonPlusClick(View view)
     {
         float zoom = mapView.getMap().getCameraPosition().getZoom();
