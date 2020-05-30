@@ -15,9 +15,9 @@ tools:showIn="@layout/activity_main">
 
     <Button
         android:id="@+id/buttonMinus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
         android:onClick="onButtonMinusClick"
         android:text="-"
@@ -26,12 +26,23 @@ tools:showIn="@layout/activity_main">
 
     <Button
         android:id="@+id/buttonPlus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="256dp"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="70dp"
         android:layout_marginBottom="8dp"
         android:onClick="onButtonPlusClick"
         android:text="+"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/buttonUpdate"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="130dp"
+        android:layout_marginBottom="8dp"
+        android:onClick="onButtonUpdateClick"
+        android:text="Update"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
