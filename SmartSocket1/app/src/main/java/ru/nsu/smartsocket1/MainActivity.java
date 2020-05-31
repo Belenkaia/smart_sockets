@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     private MapView mapView;
     private double userLatitude = 59.9386;
     private double userLongitude = 30.3141;
-    private float ZOOM_INCREMENT = 15.0f;
+    private float ZOOM_INCREMENT = 1.0f;
     private float ZOOM_DEFAULT = 10.05f;
     private float tmpZoom = ZOOM_DEFAULT;
     private static final int REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION = 112;
@@ -73,11 +73,11 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
                 updateSocketMarks();
                 if(userLocationLayer.isAnchorEnabled())
                 {
-                    userLocationLayer.resetAnchor();
+                    //userLocationLayer.resetAnchor();
 
-                    userLocationLayer.setAnchor(
-                        new PointF((float)(mapView.getWidth() * 0.5), (float)(mapView.getHeight() * 0.5)),
-                        new PointF((float)(mapView.getWidth() * 0.5), (float)(mapView.getHeight() * 0.83)));
+                  //  userLocationLayer.setAnchor(
+                   //     new PointF((float)(mapView.getWidth() * 0.5), (float)(mapView.getHeight() * 0.5)),
+                   //     new PointF((float)(mapView.getWidth() * 0.5), (float)(mapView.getHeight() * 0.83)));
                 }
             } else {
                 System.out.println("Sorry, location unavailable");
@@ -208,14 +208,9 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
 
     @Override
     public void onObjectAdded(@NonNull UserLocationView userLocationView) {
-       /* userLocationLayer.setAnchor(
-                new PointF((float)(mapView.getWidth() * 0.5), (float)(mapView.getHeight() * 0.5)),
-                new PointF((float)(mapView.getWidth() * 0.5), (float)(mapView.getHeight() * 0.83)));
-        */
         userLocationLayer.setAnchor(
                 new PointF((float)(mapView.getWidth() * 0.5), (float)(mapView.getHeight() * 0.5)),
                 new PointF((float)(mapView.getWidth() * 0.5), (float)(mapView.getHeight() * 0.83)));
-
 
         userLocationView.getArrow().setIcon(ImageProvider.fromResource(
                 this, R.drawable.location2));
@@ -240,27 +235,27 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         {
             case 0:
             {
-                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_0));
+                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_0_1));
                 break;
             }
             case 1:
             {
-                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_1));
+                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_1_1));
                 break;
             }
             case 2:
             {
-                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_2));
+                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_2_1));
                 break;
             }
             case 3:
             {
-                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_3));
+                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_3_1));
                 break;
             }
             case 4:
             {
-                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_4));
+                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_4_2));
                 break;
             }
         };
