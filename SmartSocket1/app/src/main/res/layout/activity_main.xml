@@ -8,7 +8,9 @@ android:layout_height="match_parent"
 tools:context=".MainActivity"
 tools:showIn="@layout/activity_main">
 
-<com.yandex.mapkit.mapview.MapView
+
+
+    <com.yandex.mapkit.mapview.MapView
     android:id="@+id/mapview"
     android:layout_height="match_parent"
     android:layout_width="match_parent" />
@@ -20,7 +22,7 @@ tools:showIn="@layout/activity_main">
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
         android:onClick="onButtonMinusClick"
-        android:text="-"
+        android:text="@string/minusString"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -31,19 +33,36 @@ tools:showIn="@layout/activity_main">
         android:layout_marginStart="70dp"
         android:layout_marginBottom="8dp"
         android:onClick="onButtonPlusClick"
-        android:text="+"
+        android:text="@string/plusString"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/buttonUpdate"
-        android:layout_width="wrap_content"
+    <ImageButton
+        android:id="@+id/updateButton"
+        android:layout_width="60dp"
         android:layout_height="50dp"
         android:layout_marginStart="130dp"
         android:layout_marginBottom="8dp"
+        android:contentDescription="@string/update_button_text"
         android:onClick="onButtonUpdateClick"
-        android:text="Update"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/load"
+        tools:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/userLocationButton"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="190dp"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="@string/user_location_button_text"
+        android:onClick="onButtonUserLocationClick"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/user_cursor"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

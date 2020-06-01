@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">SmartSocket1</string>
+    <string name="plusString">+</string>
+    <string name="minusString">-</string>
+    <string name="update_button_text">update_button_text</string>
+    <string name="user_location_button_text">user_location_button_text</string>
 </resources>

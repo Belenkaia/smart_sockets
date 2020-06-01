@@ -3,6 +3,7 @@ package ru.nsu.smartsocket1;
 import com.yandex.mapkit.geometry.Point;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class SocketManager {
     private ArrayList<Socket> socketArray = new ArrayList<Socket>();
@@ -11,6 +12,7 @@ public class SocketManager {
         return socketArray;
     }
 
+    private final Random random = new Random();
     public void setSocketArray(ArrayList<Socket> socketArray) {
         this.socketArray = socketArray;
     }
@@ -19,12 +21,12 @@ public class SocketManager {
         //http-запрос на сервер
         for (int i = 0; i < socketArray.size() - 2; i ++)
         {
-            socketArray.get(i).setFreeSocket(i);
+            socketArray.get(i).setFreeSocket(random.nextInt(5));
             socketArray.get(i).setPosition(new Point(userLatitude + i * 0.001 + 0.003, userLongitude + i * 0.001));
         }
         for (int i = socketArray.size() - 2; i < socketArray.size(); i ++)
         {
-            socketArray.get(i).setFreeSocket(i);
+            socketArray.get(i).setFreeSocket(random.nextInt(5));
             socketArray.get(i).setPosition(new Point(userLatitude - i * 0.001, userLongitude - i * 0.001));
         }
     }

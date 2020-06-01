@@ -13,7 +13,10 @@ import android.os.Bundle;
 import com.yandex.mapkit.Animation;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.geometry.Point;
+import com.yandex.mapkit.map.CameraListener;
 import com.yandex.mapkit.map.CameraPosition;
+import com.yandex.mapkit.map.CameraUpdateSource;
+import com.yandex.mapkit.map.Map;
 import com.yandex.mapkit.map.PlacemarkMapObject;
 import com.yandex.mapkit.mapview.MapView;
 
@@ -51,15 +54,17 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     private double userLongitude = 30.3141;
     private float ZOOM_INCREMENT = 1.0f;
     private float ZOOM_DEFAULT = 10.05f;
+    private final int MIN_TIME_LOCATION_UPDATE = 1000;
+    private final int MIN_DISTANCE_LOCATION_UPDATE = 10;
     private float tmpZoom = ZOOM_DEFAULT;
     private static final int REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION = 112;
     private static final int REQUEST_CODE_PERMISSION_ACCESS_COARSE_LOCATION = 113;
     private static final String ACCESS_FINE_LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String ACCESS_COARSE_LOCATION_PERMISSION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private LocationManager manager;
+    private LocationManager manager = null;
     private UserLocationLayer userLocationLayer;
+    private PlacemarkMapObject userMark;
     private ArrayList<PlacemarkMapObject> socketPlacemarks = new ArrayList<PlacemarkMapObject>();
-
     private SocketManager socketManager = new SocketManager();
 
     private LocationListener listener = new LocationListener() {
@@ -69,16 +74,11 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
                 userLatitude = location.getLatitude();
                 userLongitude = location.getLongitude();
                 moveCameraToUser();
+                userMark.setGeometry(new Point(userLatitude, userLongitude));
+
                 socketManager.updateSocketArray(userLatitude, userLongitude);
                 updateSocketMarks();
-                if(userLocationLayer.isAnchorEnabled())
-                {
-                    //userLocationLayer.resetAnchor();
 
-                  //  userLocationLayer.setAnchor(
-                   //     new PointF((float)(mapView.getWidth() * 0.5), (float)(mapView.getHeight() * 0.5)),
-                   //     new PointF((float)(mapView.getWidth() * 0.5), (float)(mapView.getHeight() * 0.83)));
-                }
             } else {
                 System.out.println("Sorry, location unavailable");
             }
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
         MapKitFactory.setApiKey(MAPKIT_API_KEY);
         MapKitFactory.initialize(this);
         setContentView(R.layout.activity_main);
@@ -115,40 +115,27 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
                 checkSelfPermission(ACCESS_COARSE_LOCATION_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
             // Проверка наличия разрешений
             // Если нет разрешения на использование соответсвующих разркешений выполняем какие-то действия
-            System.out.println("have not got permissions");
             ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION_PERMISSION}, REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION);
             ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION_PERMISSION}, REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION);
-            //return;
         } else {
-            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
-            MapKit mapKit = MapKitFactory.getInstance();
-            userLocationLayer = mapKit.createUserLocationLayer(mapView.getMapWindow());
-            userLocationLayer.setVisible(true);
-            userLocationLayer.setHeadingEnabled(true);
-            userLocationLayer.setObjectListener(this);
-
-            socketManager.initSocketArray(userLatitude, userLongitude);
-            setSocketMarks();
+            registerLocationManager();
         }
-        System.out.println("in onCreate");
+        userMark = mapView.getMap().getMapObjects().addPlacemark(new Point(userLatitude, userLongitude), ImageProvider.fromResource(this, R.drawable.location2));
+        socketManager.initSocketArray(userLatitude, userLongitude);
+        setSocketMarks();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                System.out.println("got Fine Location");
-                if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                        checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+                registerLocationManager();
            }
        }else
         if (requestCode == REQUEST_CODE_PERMISSION_ACCESS_COARSE_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                System.out.println("got Coarse Location");
-                if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                        checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+                registerLocationManager();
+
             }
         }
         else
@@ -156,6 +143,19 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
+   }
+   private void registerLocationManager()
+   {
+       if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+               checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+       {
+           if(manager == null)
+           {
+               manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+               manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_LOCATION_UPDATE, MIN_DISTANCE_LOCATION_UPDATE, listener);
+           }
+
+       }
    }
     protected void moveCameraToUser()
     {
@@ -173,8 +173,6 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
 
     @Override
     protected void onStart() {
-
-        System.out.println("in onStart");
         super.onStart();
         mapView.onStart();
         MapKitFactory.getInstance().onStart();
@@ -182,10 +180,8 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
 
     public void onButtonPlusClick(View view)
     {
-        System.out.println("zoom = " + tmpZoom);
         tmpZoom = mapView.getMap().getCameraPosition().getZoom();
         tmpZoom += ZOOM_INCREMENT;
-        System.out.println("new zoom = " + tmpZoom);
         mapView.getMap().move(
                 new CameraPosition(new Point(userLatitude, userLongitude), tmpZoom, 0.0f, 0.0f),
                 new Animation(Animation.Type.SMOOTH, 0),
@@ -196,26 +192,20 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     {
 
         tmpZoom = mapView.getMap().getCameraPosition().getZoom();
-        System.out.println("zoom = " + tmpZoom);
         tmpZoom -= ZOOM_INCREMENT;
-        System.out.println("new zoom = " + tmpZoom);
         mapView.getMap().move(
                 new CameraPosition(new Point(userLatitude, userLongitude), tmpZoom, 0.0f, 0.0f),
                 new Animation(Animation.Type.SMOOTH, 0),
                 null);
     }
 
+    public void onButtonUserLocationClick(View view)
+    {
+        moveCameraToUser();
+    }
 
     @Override
     public void onObjectAdded(@NonNull UserLocationView userLocationView) {
-        userLocationLayer.setAnchor(
-                new PointF((float)(mapView.getWidth() * 0.5), (float)(mapView.getHeight() * 0.5)),
-                new PointF((float)(mapView.getWidth() * 0.5), (float)(mapView.getHeight() * 0.83)));
-
-        userLocationView.getArrow().setIcon(ImageProvider.fromResource(
-                this, R.drawable.location2));
-        userLocationView.getArrow().setGeometry(new Point(userLatitude, userLongitude));
-        //userLocationView.getAccuracyCircle().setFillColor(Color.BLUE);
     }
 
     @Override
@@ -225,10 +215,8 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
 
     @Override
     public void onObjectUpdated(@NonNull UserLocationView userLocationView, @NonNull ObjectEvent objectEvent) {
-        userLocationView.getArrow().setIcon(ImageProvider.fromResource(
-                this, R.drawable.location2));
-        userLocationView.getArrow().setGeometry(new Point(userLatitude, userLongitude));
     }
+
     private void setSocketIcon(int countFreeSocket, int i)
     {
         switch (countFreeSocket) //update icon
@@ -278,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     {
         ArrayList<Socket> tmpSocketList = socketManager.getSocketArray();
         for (Socket socket : tmpSocketList) {
-            socketPlacemarks.add(mapView.getMap().getMapObjects().addPlacemark(socket.getPosition(), ImageProvider.fromResource(this, R.drawable.socket_4)));
+            socketPlacemarks.add(mapView.getMap().getMapObjects().addPlacemark(socket.getPosition(), ImageProvider.fromResource(this, R.drawable.socket_4_2)));
         }
     }
 }
