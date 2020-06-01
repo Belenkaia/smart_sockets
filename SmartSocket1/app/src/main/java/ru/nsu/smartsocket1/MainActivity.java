@@ -73,6 +73,10 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
                 userMark.setGeometry(new Point(userLatitude, userLongitude));
 
                 socketManager.updateSocketArray(userLatitude, userLongitude);
+                while(!socketManager.isSocketsIsReady())
+                {
+                    System.out.println("wait for socket list");
+                }
                 updateSocketMarks();
 
             } else {
@@ -117,7 +121,12 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
             registerLocationManager();
         }
         userMark = mapView.getMap().getMapObjects().addPlacemark(new Point(userLatitude, userLongitude), ImageProvider.fromResource(this, R.drawable.location2));
+
         socketManager.updateSocketArray(userLatitude, userLongitude);
+        while(!socketManager.isSocketsIsReady())
+        {
+            System.out.println("wait for socket list");
+        }
         setSocketMarks();
     }
 
@@ -247,6 +256,10 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     public void onButtonUpdateClick(View view)
     {
         socketManager.updateSocketArray(userLatitude, userLongitude);
+        while(!socketManager.isSocketsIsReady())
+        {
+            System.out.println("wait for socket list");
+        }
         updateSocketMarks();
     }
     public void updateSocketMarks()

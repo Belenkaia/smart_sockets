@@ -24,7 +24,11 @@ public class SocketManager {
         return socketArray;
     }
 
-   // private final Random random = new Random();
+    public boolean isSocketsIsReady() {
+        return socketsIsReady;
+    }
+
+    // private final Random random = new Random();
     public void setSocketArray(SocketResponse[] socketResponseArray) {
 
         socketArray.clear();
@@ -43,6 +47,7 @@ public class SocketManager {
 
     public void updateSocketArray(double userLatitude, double userLongitude)
     {
+        socketsIsReady = false;
         HttpUrl.Builder urlBuilder = HttpUrl.parse(SERVER_URL).newBuilder();
         urlBuilder.addQueryParameter("latitude", Double.toString(userLatitude));
         urlBuilder.addQueryParameter("longitude", Double.toString(userLongitude));
