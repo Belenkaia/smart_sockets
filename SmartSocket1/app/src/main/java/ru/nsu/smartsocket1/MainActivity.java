@@ -255,21 +255,26 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     }
     public void onButtonUpdateClick(View view)
     {
-        socketManager.updateSocketArray(userLatitude, userLongitude);
-        while(!socketManager.isSocketsIsReady())
+        if(socketManager != null)
         {
-            System.out.println("wait for socket list");
+            socketManager.updateSocketArray(userLatitude, userLongitude);
+            while(!socketManager.isSocketsIsReady())
+            {
+                System.out.println("wait for socket list");
+            }
+            updateSocketMarks();
         }
-        updateSocketMarks();
     }
     public void updateSocketMarks()
     {
-        ArrayList<Socket> tmpSocketList = socketManager.getSocketArray();
-        for (int i = 0; i < socketPlacemarks.size(); i ++) {
-            socketPlacemarks.get(i).setGeometry(tmpSocketList.get(i).getPosition()); //update position
+        if(socketManager != null) {
+            ArrayList<Socket> tmpSocketList = socketManager.getSocketArray();
+            for (int i = 0; i < socketPlacemarks.size(); i++) {
+                socketPlacemarks.get(i).setGeometry(tmpSocketList.get(i).getPosition()); //update position
 
-            setSocketIcon(tmpSocketList.get(i).getFreeSocket(), i);//update icon
+                setSocketIcon(tmpSocketList.get(i).getFreeSocket(), i);//update icon
             }
+        }
     }
     public void setSocketMarks()
     {
