@@ -1,5 +1,7 @@
 package ru.nsu.smartsocket1;
 
+import android.util.Log;
+
 import com.google.gson.GsonBuilder;
 import com.yandex.mapkit.geometry.Point;
 
@@ -27,18 +29,17 @@ public class SocketManager {
         return socketsIsReady;
     }
 
-    // private final Random random = new Random();
     public void setSocketArray(SocketResponse[] socketResponseArray) {
 
         socketArray.clear();
-        System.out.println("json: ");
+        //System.out.println("json: ");
         for (SocketResponse socketResponse : socketResponseArray) {
             Socket tmpSocket = new Socket();
-            System.out.print("| " + socketResponse.getLatitude() + ", " + socketResponse.getLongitude() + ", " + socketResponse.getFree_sockets() + " | ");
+          //  System.out.print("| " + socketResponse.getLatitude() + ", " + socketResponse.getLongitude() + ", " + socketResponse.getFree_sockets() + " | ");
             tmpSocket.setFreeSocket(socketResponse.getFree_sockets());
             tmpSocket.setPosition(new Point(socketResponse.getLatitude(), socketResponse.getLongitude()));
-            System.out.println(" sockets: ");
-            System.out.print("{ " + tmpSocket.getFreeSocket() + ", " + tmpSocket.getPosition().getLatitude() + ", " + tmpSocket.getPosition().getLongitude() + " } ");
+            //System.out.println(" sockets: ");
+           // System.out.print("{ " + tmpSocket.getFreeSocket() + ", " + tmpSocket.getPosition().getLatitude() + ", " + tmpSocket.getPosition().getLongitude() + " } ");
             socketArray.add(tmpSocket);
         }
         socketsIsReady = true;
@@ -61,7 +62,8 @@ public class SocketManager {
             {
                 try {
                     String stringResponse = response.body().string();
-                    System.out.println("String RESPONSE: " + stringResponse);
+                    //System.out.println("String RESPONSE: " + stringResponse);
+                    Log.i(Helper.TAG, "Had server response: " + stringResponse);
                     SocketResponse[] socketResponseArray = new GsonBuilder().create().fromJson(stringResponse, SocketResponse[].class);
                     setSocketArray(socketResponseArray);
                 } catch (IOException e) {
@@ -70,37 +72,9 @@ public class SocketManager {
             }
 
             public void onFailure(Call call, IOException e) {
-                System.out.println("fail with the server");
-
+                //System.out.println("fail with the server");
+                Log.i(Helper.TAG, "Fail with the server");
             }
         });
-
-        /*for (int i = 0; i < socketArray.size() - 2; i ++)
-        {
-            socketArray.get(i).setFreeSocket(random.nextInt(5));
-            socketArray.get(i).setPosition(new Point(userLatitude + i * 0.001 + 0.003, userLongitude + i * 0.001));
-        }
-        for (int i = socketArray.size() - 2; i < socketArray.size(); i ++)
-        {
-            socketArray.get(i).setFreeSocket(random.nextInt(5));
-            socketArray.get(i).setPosition(new Point(userLatitude - i * 0.001, userLongitude - i * 0.001));
-        }*/
     }
-
-   /* public void initSocketArray(double userLatitude, double userLongitude)
-    {
-        // http to server
-        for( int i = 0 ; i < 3; i ++)
-        {
-            Socket tmpSocket = new Socket();
-            tmpSocket.setPosition(new Point(userLatitude + i * 0.001 + 0.003, userLongitude + i * 0.001));
-            socketArray.add(tmpSocket);
-        }
-        for( int i = 3 ; i < 5; i ++)
-        {
-            Socket tmpSocket = new Socket();
-            tmpSocket.setPosition(new Point(userLatitude - i * 0.001, userLongitude - i * 0.001));
-            socketArray.add(tmpSocket);
-        }
-    }*/
 }

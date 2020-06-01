@@ -3,7 +3,6 @@ package ru.nsu.smartsocket1;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
@@ -13,39 +12,29 @@ import android.os.Bundle;
 import com.yandex.mapkit.Animation;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.geometry.Point;
-import com.yandex.mapkit.map.CameraListener;
 import com.yandex.mapkit.map.CameraPosition;
-import com.yandex.mapkit.map.CameraUpdateSource;
-import com.yandex.mapkit.map.Map;
 import com.yandex.mapkit.map.PlacemarkMapObject;
 import com.yandex.mapkit.mapview.MapView;
 
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.util.Log;
 import android.view.View;
 
 
-import com.yandex.mapkit.user_location.UserLocationLayer;
 import com.yandex.mapkit.user_location.UserLocationObjectListener;
 import com.yandex.mapkit.user_location.UserLocationView;
 import com.yandex.runtime.image.ImageProvider;
-import android.graphics.Color;
-import android.graphics.PointF;
-
-import com.yandex.mapkit.MapKit;
-import com.yandex.mapkit.MapKitFactory;
-import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.layers.ObjectEvent;
-import com.yandex.mapkit.map.CameraPosition;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements UserLocationObjectListener {
+public class MainActivity extends AppCompatActivity/* implements UserLocationObjectListener */{
 
-    private final String MAPKIT_API_KEY = "38f7019b-3523-494e-a2dc-088ce94d1298";
+   // private final String MAPKIT_API_KEY = "38f7019b-3523-494e-a2dc-088ce94d1298";
     private MapView mapView;
+
     private double userLatitude = 59.9386;
     private double userLongitude = 30.3141;
     private float ZOOM_INCREMENT = 1.0f;
@@ -74,12 +63,14 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
                 socketManager.updateSocketArray(userLatitude, userLongitude);
                 while(!socketManager.isSocketsIsReady())
                 {
-                    System.out.println("wait for socket list");
+                    Log.i(Helper.TAG, "Wait for socket list update");
+                    //System.out.println("wait for socket list");
                 }
                 updateSocketMarks();
 
             } else {
-                System.out.println("Sorry, location unavailable");
+                Log.e(Helper.TAG, "Location unavailable");
+                //System.out.println("Sorry, location unavailable");
             }
         }
 
@@ -101,22 +92,23 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         super.onCreate(savedInstanceState);
 
 
-        MapKitFactory.setApiKey(MAPKIT_API_KEY);
+        MapKitFactory.setApiKey(Helper.getMetaData(this, "MAPKIT_API_KEY"));
         MapKitFactory.initialize(this);
         setContentView(R.layout.activity_main);
 
-        mapView = (MapView) findViewById(R.id.mapview);
-                mapView.getMap().move(
-                new CameraPosition(new Point(userLatitude, userLongitude), ZOOM_DEFAULT, 0.0f, 0.0f),
-                new Animation(Animation.Type.SMOOTH, 0),
-                null);
+        mapView = findViewById(R.id.mapview);
+        mapView.getMap().move(new CameraPosition(new Point(userLatitude, userLongitude), ZOOM_DEFAULT, 0.0f, 0.0f),
+                new Animation(Animation.Type.SMOOTH, 0), null);
         if (checkSelfPermission(ACCESS_FINE_LOCATION_PERMISSION) != PackageManager.PERMISSION_GRANTED ||
                 checkSelfPermission(ACCESS_COARSE_LOCATION_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
             // Проверка наличия разрешений
-            // Если нет разрешения на использование соответсвующих разркешений выполняем какие-то действия
+            // Если нет разрешения на использование соответсвующих разркешений
+            Log.i(Helper.TAG, "Send request for permissions");
             ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION_PERMISSION}, REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION);
             ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION_PERMISSION}, REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION);
+
         } else {
+            Log.i(Helper.TAG, "Have all permissions");
             registerLocationManager();
         }
         userMark = mapView.getMap().getMapObjects().addPlacemark(new Point(userLatitude, userLongitude), ImageProvider.fromResource(this, R.drawable.location2));
@@ -124,7 +116,8 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         socketManager.updateSocketArray(userLatitude, userLongitude);
         while(!socketManager.isSocketsIsReady())
         {
-            System.out.println("wait for socket list");
+            Log.i(Helper.TAG, "Wait for socket list update");
+            //System.out.println("wait for socket list");
         }
         setSocketMarks();
     }
@@ -206,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     {
         moveCameraToUser();
     }
-
+/*
     @Override
     public void onObjectAdded(@NonNull UserLocationView userLocationView) {
     }
@@ -219,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     @Override
     public void onObjectUpdated(@NonNull UserLocationView userLocationView, @NonNull ObjectEvent objectEvent) {
     }
-
+*/
     private void setSocketIcon(int countFreeSocket, int i)
     {
         switch (countFreeSocket) //update icon
@@ -258,7 +251,8 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
             socketManager.updateSocketArray(userLatitude, userLongitude);
             while(!socketManager.isSocketsIsReady())
             {
-                System.out.println("wait for socket list");
+                Log.i(Helper.TAG, "Wait for socket list update");
+                //System.out.println("wait for socket list");
             }
             updateSocketMarks();
         }
@@ -285,5 +279,6 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
 
         }
     }
+
 }
 
