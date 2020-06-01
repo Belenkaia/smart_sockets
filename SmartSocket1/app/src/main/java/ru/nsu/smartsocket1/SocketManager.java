@@ -2,11 +2,21 @@ package ru.nsu.smartsocket1;
 
 import com.yandex.mapkit.geometry.Point;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class SocketManager {
     private ArrayList<Socket> socketArray = new ArrayList<Socket>();
+    private final OkHttpClient client = new OkHttpClient();
+    private final String SERVER_URL = "http://134.209.22.90:80/sockets";
 
     public ArrayList<Socket> getSocketArray() {
         return socketArray;
@@ -16,9 +26,34 @@ public class SocketManager {
     public void setSocketArray(ArrayList<Socket> socketArray) {
         this.socketArray = socketArray;
     }
+
     public void updateSocketArray(double userLatitude, double userLongitude)
     {
-        //http-запрос на сервер
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(SERVER_URL).newBuilder();
+        urlBuilder.addQueryParameter("latitude", Double.toString(userLatitude));
+        urlBuilder.addQueryParameter("longitude", Double.toString(userLongitude));
+
+        String url = urlBuilder.build().toString();
+
+        Request request = new Request.Builder().url(url).build();
+
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            public void onResponse(Call call, Response response)
+            {
+                try {
+                    String stringResponse = response.body().string();
+                    System.out.println("String RESPONSE: " + stringResponse);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            public void onFailure(Call call, IOException e) {
+                System.out.println("fail with the server");
+            }
+        });
+
         for (int i = 0; i < socketArray.size() - 2; i ++)
         {
             socketArray.get(i).setFreeSocket(random.nextInt(5));
@@ -30,6 +65,7 @@ public class SocketManager {
             socketArray.get(i).setPosition(new Point(userLatitude - i * 0.001, userLongitude - i * 0.001));
         }
     }
+
     public void initSocketArray(double userLatitude, double userLongitude)
     {
         // http to server
