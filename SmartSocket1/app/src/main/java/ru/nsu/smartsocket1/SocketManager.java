@@ -5,7 +5,6 @@ import com.yandex.mapkit.geometry.Point;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -15,7 +14,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class SocketManager {
-    private boolean socketsIsReady = false;
+    boolean socketsIsReady = false;
     private ArrayList<Socket> socketArray = new ArrayList<Socket>();
     private final OkHttpClient client = new OkHttpClient();
     private final String SERVER_URL = "http://134.209.22.90:80/sockets";
@@ -72,6 +71,7 @@ public class SocketManager {
 
             public void onFailure(Call call, IOException e) {
                 System.out.println("fail with the server");
+
             }
         });
 

@@ -1,6 +1,6 @@
 package ru.nsu.smartsocket1;
 
-public class SocketResponse {
+class SocketResponse {
     private double latitude;
     private double longitude;
     private int free_sockets;

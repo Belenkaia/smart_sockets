@@ -2,23 +2,23 @@ package ru.nsu.smartsocket1;
 
 import com.yandex.mapkit.geometry.Point;
 
-public class Socket {
+class Socket {
     private Point position;
     private int freeSocket = 4;
 
-    public int getFreeSocket() {
+    int getFreeSocket() {
         return freeSocket;
     }
 
-    public Point getPosition() {
+    Point getPosition() {
         return position;
     }
 
-    public void setFreeSocket(int freeSocket) {
+    void setFreeSocket(int freeSocket) {
         this.freeSocket = freeSocket;
     }
 
-    public void setPosition(Point position) {
+    void setPosition(Point position) {
         this.position = position;
     }
 }

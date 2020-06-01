@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     private static final String ACCESS_FINE_LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String ACCESS_COARSE_LOCATION_PERMISSION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private LocationManager manager = null;
-    private UserLocationLayer userLocationLayer;
     private PlacemarkMapObject userMark;
     private ArrayList<PlacemarkMapObject> socketPlacemarks = new ArrayList<PlacemarkMapObject>();
     private SocketManager socketManager = new SocketManager();
@@ -133,14 +132,13 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 registerLocationManager();
            }
        }else
         if (requestCode == REQUEST_CODE_PERMISSION_ACCESS_COARSE_LOCATION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 registerLocationManager();
-
             }
         }
         else
@@ -162,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
 
        }
    }
-    protected void moveCameraToUser()
+    private void moveCameraToUser()
     {
         mapView.getMap().move(
                 new CameraPosition(new Point(userLatitude, userLongitude), tmpZoom, 0.0f, 0.0f),
@@ -265,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
             updateSocketMarks();
         }
     }
-    public void updateSocketMarks()
+    private void updateSocketMarks()
     {
         if(socketManager != null) {
             ArrayList<Socket> tmpSocketList = socketManager.getSocketArray();
@@ -276,11 +274,16 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
             }
         }
     }
-    public void setSocketMarks()
+    private void setSocketMarks()
     {
-        ArrayList<Socket> tmpSocketList = socketManager.getSocketArray();
-        for (Socket socket : tmpSocketList) {
-            socketPlacemarks.add(mapView.getMap().getMapObjects().addPlacemark(socket.getPosition(), ImageProvider.fromResource(this, R.drawable.socket_4_2)));
+        if(socketManager != null)
+        {
+            ArrayList<Socket> tmpSocketList = socketManager.getSocketArray();
+            for (Socket socket : tmpSocketList) {
+             socketPlacemarks.add(mapView.getMap().getMapObjects().addPlacemark(socket.getPosition(), ImageProvider.fromResource(this, R.drawable.socket_4_2)));
+            }
+
         }
     }
 }
+
