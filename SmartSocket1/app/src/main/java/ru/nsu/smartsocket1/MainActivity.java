@@ -25,11 +25,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.view.View;
 
-import com.yandex.mapkit.map.CompositeIcon;
-import com.yandex.mapkit.map.IconStyle;
-import com.yandex.mapkit.map.MapWindow;
-import com.yandex.mapkit.map.RotationType;
-import com.yandex.mapkit.mapview.MapView;
+
 import com.yandex.mapkit.user_location.UserLocationLayer;
 import com.yandex.mapkit.user_location.UserLocationObjectListener;
 import com.yandex.mapkit.user_location.UserLocationView;
@@ -121,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
             registerLocationManager();
         }
         userMark = mapView.getMap().getMapObjects().addPlacemark(new Point(userLatitude, userLongitude), ImageProvider.fromResource(this, R.drawable.location2));
-        socketManager.initSocketArray(userLatitude, userLongitude);
+        socketManager.updateSocketArray(userLatitude, userLongitude);
         setSocketMarks();
     }
 
