@@ -32,14 +32,10 @@ public class SocketManager {
     public void setSocketArray(SocketResponse[] socketResponseArray) {
 
         socketArray.clear();
-        //System.out.println("json: ");
         for (SocketResponse socketResponse : socketResponseArray) {
             Socket tmpSocket = new Socket();
-          //  System.out.print("| " + socketResponse.getLatitude() + ", " + socketResponse.getLongitude() + ", " + socketResponse.getFree_sockets() + " | ");
             tmpSocket.setFreeSocket(socketResponse.getFree_sockets());
             tmpSocket.setPosition(new Point(socketResponse.getLatitude(), socketResponse.getLongitude()));
-            //System.out.println(" sockets: ");
-           // System.out.print("{ " + tmpSocket.getFreeSocket() + ", " + tmpSocket.getPosition().getLatitude() + ", " + tmpSocket.getPosition().getLongitude() + " } ");
             socketArray.add(tmpSocket);
         }
         socketsIsReady = true;
@@ -62,7 +58,6 @@ public class SocketManager {
             {
                 try {
                     String stringResponse = response.body().string();
-                    //System.out.println("String RESPONSE: " + stringResponse);
                     Log.i(Helper.TAG, "Had server response: " + stringResponse);
                     SocketResponse[] socketResponseArray = new GsonBuilder().create().fromJson(stringResponse, SocketResponse[].class);
                     setSocketArray(socketResponseArray);
@@ -72,7 +67,6 @@ public class SocketManager {
             }
 
             public void onFailure(Call call, IOException e) {
-                //System.out.println("fail with the server");
                 Log.i(Helper.TAG, "Fail with the server");
             }
         });

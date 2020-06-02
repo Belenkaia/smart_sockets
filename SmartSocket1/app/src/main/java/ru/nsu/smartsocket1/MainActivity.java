@@ -22,17 +22,11 @@ import android.location.LocationManager;
 import android.util.Log;
 import android.view.View;
 
-
-import com.yandex.mapkit.user_location.UserLocationObjectListener;
-import com.yandex.mapkit.user_location.UserLocationView;
 import com.yandex.runtime.image.ImageProvider;
-import com.yandex.mapkit.layers.ObjectEvent;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity/* implements UserLocationObjectListener */{
-
-   // private final String MAPKIT_API_KEY = "38f7019b-3523-494e-a2dc-088ce94d1298";
+public class MainActivity extends AppCompatActivity{
     private MapView mapView;
 
     private double userLatitude = 59.9386;
@@ -64,13 +58,11 @@ public class MainActivity extends AppCompatActivity/* implements UserLocationObj
                 while(!socketManager.isSocketsIsReady())
                 {
                     Log.i(Helper.TAG, "Wait for socket list update");
-                    //System.out.println("wait for socket list");
                 }
                 updateSocketMarks();
 
             } else {
                 Log.e(Helper.TAG, "Location unavailable");
-                //System.out.println("Sorry, location unavailable");
             }
         }
 
@@ -117,7 +109,6 @@ public class MainActivity extends AppCompatActivity/* implements UserLocationObj
         while(!socketManager.isSocketsIsReady())
         {
             Log.i(Helper.TAG, "Wait for socket list update");
-            //System.out.println("wait for socket list");
         }
         setSocketMarks();
     }
@@ -199,20 +190,7 @@ public class MainActivity extends AppCompatActivity/* implements UserLocationObj
     {
         moveCameraToUser();
     }
-/*
-    @Override
-    public void onObjectAdded(@NonNull UserLocationView userLocationView) {
-    }
 
-    @Override
-    public void onObjectRemoved(@NonNull UserLocationView userLocationView) {
-
-    }
-
-    @Override
-    public void onObjectUpdated(@NonNull UserLocationView userLocationView, @NonNull ObjectEvent objectEvent) {
-    }
-*/
     private void setSocketIcon(int countFreeSocket, int i)
     {
         switch (countFreeSocket) //update icon
@@ -252,7 +230,6 @@ public class MainActivity extends AppCompatActivity/* implements UserLocationObj
             while(!socketManager.isSocketsIsReady())
             {
                 Log.i(Helper.TAG, "Wait for socket list update");
-                //System.out.println("wait for socket list");
             }
             updateSocketMarks();
         }
