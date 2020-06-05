@@ -57,10 +57,16 @@ public class SocketManager {
             public void onResponse(Call call, Response response)
             {
                 try {
-                    String stringResponse = response.body().string();
-                    Log.i(Helper.TAG, "Had server response: " + stringResponse);
-                    SocketResponse[] socketResponseArray = new GsonBuilder().create().fromJson(stringResponse, SocketResponse[].class);
-                    setSocketArray(socketResponseArray);
+                    if(response.isSuccessful()) {
+                        String stringResponse = response.body().string();
+                        Log.i(Helper.TAG, "Had server response: " + stringResponse);
+                        SocketResponse[] socketResponseArray = new GsonBuilder().create().fromJson(stringResponse, SocketResponse[].class);
+                        setSocketArray(socketResponseArray);
+                    }
+                    else // error on server
+                    {
+                        getServerDefaultValues(userLatitude, userLongitude);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -68,16 +74,21 @@ public class SocketManager {
 
             public void onFailure(Call call, IOException e) {
                 Log.i(Helper.TAG, "Fail with the server");
-                Log.i(Helper.TAG, "Use default values");
-                SocketResponse[] socketResponseArray = new SocketResponse[6];
-                for (int i = 0; i < 6; i ++) {
-                    socketResponseArray[i].setFree_sockets(i % 5);
-                    socketResponseArray[i].setLatitude(userLatitude + i * 0.01);
-                    socketResponseArray[i].setLongitude(userLongitude + i * 0.01);
-                }
-                setSocketArray(socketResponseArray);
+                getServerDefaultValues(userLatitude, userLongitude);
 
             }
         });
+    }
+
+    private void getServerDefaultValues(final double userLatitude, final double userLongitude)
+    {
+        Log.i(Helper.TAG, "Use default values");
+        SocketResponse[] socketResponseArray = new SocketResponse[6];
+        for (int i = 0; i < 6; i ++) {
+            socketResponseArray[i].setFree_sockets(i % 5);
+            socketResponseArray[i].setLatitude(userLatitude + i * 0.01);
+            socketResponseArray[i].setLongitude(userLongitude + i * 0.01);
+        }
+        setSocketArray(socketResponseArray);
     }
 }
