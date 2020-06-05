@@ -85,6 +85,7 @@ public class SocketManager {
         Log.i(Helper.TAG, "Use default values");
         SocketResponse[] socketResponseArray = new SocketResponse[6];
         for (int i = 0; i < 6; i ++) {
+            socketResponseArray[i] = new SocketResponse();
             socketResponseArray[i].setFree_sockets(i % 5);
             socketResponseArray[i].setLatitude(userLatitude + i * 0.01);
             socketResponseArray[i].setLongitude(userLongitude + i * 0.01);

@@ -208,35 +208,6 @@ public class MainActivity extends AppCompatActivity{
             socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, marksArray.get(countFreeSocket)));
         else
             Log.e(Helper.TAG, "count_free_socket is out of bound");
-        /*
-        switch (countFreeSocket) //update icon
-        {
-            case 0:
-            {
-                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_0_1));
-                break;
-            }
-            case 1:
-            {
-                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_1_1));
-                break;
-            }
-            case 2:
-            {
-                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_2_1));
-                break;
-            }
-            case 3:
-            {
-                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_3_1));
-                break;
-            }
-            case 4:
-            {
-                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_4_1));
-                break;
-            }
-        };*/
     }
     public void onButtonUpdateClick(View view)
     {
@@ -267,7 +238,10 @@ public class MainActivity extends AppCompatActivity{
         {
             ArrayList<Socket> tmpSocketList = socketManager.getSocketArray();
             for (Socket socket : tmpSocketList) {
-             socketPlacemarks.add(mapView.getMap().getMapObjects().addPlacemark(socket.getPosition(), ImageProvider.fromResource(this, R.drawable.socket_4_1)));
+                if((socket.getFreeSocket() < marksArray.size()) && (socket.getFreeSocket() >= 0))
+                    socketPlacemarks.add(mapView.getMap().getMapObjects().addPlacemark(socket.getPosition(), ImageProvider.fromResource(this, marksArray.get(socket.getFreeSocket()))));
+                else
+                    Log.e(Helper.TAG, "count_free_socket is out of bound");
             }
 
         }
