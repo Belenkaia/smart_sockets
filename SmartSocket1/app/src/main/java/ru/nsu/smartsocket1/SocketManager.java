@@ -41,7 +41,7 @@ public class SocketManager {
         socketsIsReady = true;
     }
 
-    public void updateSocketArray(double userLatitude, double userLongitude)
+    public void updateSocketArray(final double userLatitude, final double userLongitude)
     {
         socketsIsReady = false;
         HttpUrl.Builder urlBuilder = HttpUrl.parse(SERVER_URL).newBuilder();
@@ -68,6 +68,15 @@ public class SocketManager {
 
             public void onFailure(Call call, IOException e) {
                 Log.i(Helper.TAG, "Fail with the server");
+                Log.i(Helper.TAG, "Use default values");
+                SocketResponse[] socketResponseArray = new SocketResponse[6];
+                for (int i = 0; i < 6; i ++) {
+                    socketResponseArray[i].setFree_sockets(i % 5);
+                    socketResponseArray[i].setLatitude(userLatitude + i * 0.01);
+                    socketResponseArray[i].setLongitude(userLongitude + i * 0.01);
+                }
+                setSocketArray(socketResponseArray);
+
             }
         });
     }

@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity{
     private PlacemarkMapObject userMark;
     private ArrayList<PlacemarkMapObject> socketPlacemarks = new ArrayList<PlacemarkMapObject>();
     private SocketManager socketManager = new SocketManager();
+    private ArrayList<Integer> marksArray = new ArrayList<>();
 
     private LocationListener listener = new LocationListener() {
         @Override
@@ -78,11 +79,21 @@ public class MainActivity extends AppCompatActivity{
         public void onProviderDisabled(String provider) {
         }
     };
+    private void initMarksArrayList()
+    {
+        for(int i = 0; i < 5; i ++)
+        {
+            String fileName = "socket_" + i + "_1";
+            int fileID = getResources().getIdentifier(fileName, "drawable", getPackageName());
+            marksArray.add(fileID);
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        initMarksArrayList();
 
         MapKitFactory.setApiKey(Helper.getMetaData(this, "MAPKIT_API_KEY"));
         MapKitFactory.initialize(this);
@@ -97,7 +108,7 @@ public class MainActivity extends AppCompatActivity{
             // Если нет разрешения на использование соответсвующих разркешений
             Log.i(Helper.TAG, "Send request for permissions");
             ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION_PERMISSION}, REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION);
-            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION_PERMISSION}, REQUEST_CODE_PERMISSION_ACCESS_FINE_LOCATION);
+            ActivityCompat.requestPermissions(this, new String[]{ACCESS_COARSE_LOCATION_PERMISSION}, REQUEST_CODE_PERMISSION_ACCESS_COARSE_LOCATION);
 
         } else {
             Log.i(Helper.TAG, "Have all permissions");
@@ -193,6 +204,11 @@ public class MainActivity extends AppCompatActivity{
 
     private void setSocketIcon(int countFreeSocket, int i)
     {
+        if((countFreeSocket < marksArray.size()) && (countFreeSocket >= 0))
+            socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, marksArray.get(countFreeSocket)));
+        else
+            Log.e(Helper.TAG, "count_free_socket is out of bound");
+        /*
         switch (countFreeSocket) //update icon
         {
             case 0:
@@ -217,10 +233,10 @@ public class MainActivity extends AppCompatActivity{
             }
             case 4:
             {
-                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_4_2));
+                socketPlacemarks.get(i).setIcon(ImageProvider.fromResource(this, R.drawable.socket_4_1));
                 break;
             }
-        };
+        };*/
     }
     public void onButtonUpdateClick(View view)
     {
@@ -251,7 +267,7 @@ public class MainActivity extends AppCompatActivity{
         {
             ArrayList<Socket> tmpSocketList = socketManager.getSocketArray();
             for (Socket socket : tmpSocketList) {
-             socketPlacemarks.add(mapView.getMap().getMapObjects().addPlacemark(socket.getPosition(), ImageProvider.fromResource(this, R.drawable.socket_4_2)));
+             socketPlacemarks.add(mapView.getMap().getMapObjects().addPlacemark(socket.getPosition(), ImageProvider.fromResource(this, R.drawable.socket_4_1)));
             }
 
         }
