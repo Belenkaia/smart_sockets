@@ -17,7 +17,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data android:name="MAPKIT_API_KEY" android:value="38f7019b-3523-494e-a2dc-088ce94d1298"/>
+        <meta-data android:name="MAPKIT_API_KEY" android:value="your_secret_key"/>
     </application>
 
 </manifest>
